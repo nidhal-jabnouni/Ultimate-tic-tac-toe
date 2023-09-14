@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        button{
+            height: 40px;
+            width: 40px;
+            font-size: 20px;
+            padding: 0px;
+            text-align:center; 
+            vertical-align:middle
+            
+        }
+        table,td{
+            margin-left: auto;
+            margin-right: auto;
+            border: 3px solid white;
+        }
+        .x {
+            background-color: red;       
+        }
+        .o{
+            background-color: aqua;
+        }
+        .bigX{
+            background-color: red;
+            height: 120px;
+            width: 120px;
+            font-size: 120px;
+            font-display: auto;
+            margin: auto;
+            line-height: 1.25rem;     
+            padding: 0px;
+        }
+        .bigO{
+            background-color: aqua;
+            height: 120px;
+            width: 120px;
+            font-size: 120px;
+            font-display: auto;
+            margin: auto;
+            line-height: 1.25rem;     
+            padding: 0px;
+        }
+        .class0{
+            background-color: wheat;
+        }
+        .bigClass0{
+            background-color: wheat;
+            height: 120px;
+            width: 120px;
+            font-size: 120px;
+            font-display: auto;
+            margin: auto;
+            line-height: 1.25rem;     
+            padding: 0px;
+        }
+        .lastDiv{
+            margin-left: auto;
+            margin-right: auto;
+            color: black;
+            font-size: 60px;
+            padding: 0px;
+            text-align:center; 
+            vertical-align:middle
+        }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate tic-tac-toe</title>
+</head>
+<body>
+
+<script>
+    function createXODiv(id){
+        let dv = document.createElement("div");
+        dv.id = id
+        let bt = [];
+        for(let i = 0; i < 9; i++){
+            bt[i] = document.createElement("button");
+            bt[i].className = "class0";
+            bt[i].innerText = ".";
+            bt[i].id = i.toString();
+            bt[i].addEventListener("click",function(){
+                play(bt[i]);
+            });
+            dv.appendChild(bt[i]);
+            if ((i + 1) % 3 === 0){
+                dv.appendChild(document.createElement("br"));
+            };
+        };
+        return dv;
+    }
+    function play(b){
+        let parentId = parseInt(b.parentNode.id[3]);
+        if (((currentDiv == -1) || (currentDiv === parentId)) && (b.className === "class0") && (!wonGames.includes(parentId)) && (!gameOver)){
+            b.className = currentPlayer;
+            b.innerText = currentPlayer;
+            if (isWin(currentPlayer,parentId)){
+                replaceGame(parentId,currentPlayer)
+            }else if(document.getElementById('div'+parentId).getElementsByClassName("class0").length === 0){
+                replaceGame(parentId);
+                wonGames.push(parentId);
+            }
+            if (!isGameOver()){
+                //next steps should be last.
+                (currentPlayer === "x") ? currentPlayer = "o": currentPlayer = "x";
+                hideSelectedDiv();
+                currentDiv = parseInt(b.id);
+                if (wonGames.includes(currentDiv)){
+                    currentDiv = -1;
+                }
+                showSelectedDiv();
+            }
+        }
+    };
+    function isGameOver(){
+        if (d.innerText === ''){
+            let txt = "";
+            if (isWin(currentPlayer,9)){
+                txt = (currentPlayer+' won!');
+            }else if(bigGame.getElementsByClassName("class0").length === 0){
+                txt = ("it's a draw!");
+            }
+            if (txt !== ''){
+             d.innerText = txt;
+            }
+        }
+    }
+    function extractFromDiv(currentPlayer,currentDiv){
+        let result = "";
+        let dv = document.getElementById("div"+currentDiv);
+        let bt = dv.getElementsByClassName(currentPlayer);
+        for(let i = 0; i < bt.length; i++){
+            result += bt[i].id;
+        };
+        return result;
+    }
+    function isWin(currentPlayer,id){
+        let moves = extractFromDiv(currentPlayer,id);
+        let movesl = moves.split('');
+        let flag = false;
+        for(let i = 0; i < winList.length; i++){
+            comb = winList[i]
+            let combl = comb.split('');
+            flag = true;
+            // is combl in movesl?
+            for(let i = 0;i < combl.length && flag;i++){
+                flag = movesl.includes(combl[i]);
+            }
+            if (flag === true){
+                wonGames.push(id);
+                //replaceGame(id...)
+                break;
+            }
+            };
+            return flag;
+        
+    }
+    //if draw no 2nd param
+    function replaceGame(parentId,currentPlayer = "class0"){
+        let dv = document.getElementById("div"+parentId);
+        let newB = document.createElement("button");
+        newB.className = "big"+currentPlayer[0].toUpperCase()+currentPlayer.slice(1);
+        bigGame.getElementsByTagName('button')[parentId].className = currentPlayer;
+        if (currentPlayer === "class0"){
+            currentPlayer = '.';
+        }
+        newB.innerText = currentPlayer;
+        dv.replaceChildren(newB);
+    }
+    function showSelectedDiv(){
+        if (!isGameOver()){
+            let color = '';
+            currentPlayer === 'x' ? color = 'red': color = "aqua";
+            if (currentDiv === -1){
+                for(i = 0; i < 9; i++){
+                    if (!wonGames.includes(i)){
+                        document.getElementById("td"+i).style.border = "3px solid "+color;
+                    }
+                }
+            }else{
+                document.getElementById("td"+currentDiv).style.border = "3px solid "+color;
+            }   
+            }
+    }
+    function hideSelectedDiv(){
+        let color = 'white';
+        if(currentDiv !== -1){
+            let color = 'white';
+            document.getElementById("td"+currentDiv).style.border = "3px solid "+color;
+        }else{
+            for(i = 0; i < 9; i++)
+                document.getElementById("td"+i).style.border = "3px solid "+color;
+        }
+    }
+    let t = document.createElement("table");
+    let temp = undefined;
+    for(let i = 0; i < 9; i++){
+        if ((i ) % 3 === 0){
+            t.appendChild(document.createElement("tr"));
+        };
+        temp = document.createElement("td");
+        temp.appendChild(createXODiv('div' + i));
+        temp.id = "td"+i;
+        t.lastChild.appendChild(temp);
+    }
+    document.body.appendChild(t);
+    /* 0 1 2
+       3 4 5
+       6 7 8  */
+    const winList = ['012','345','678','036','147','258','048','246'];
+    let wonGames = [];
+    let currentPlayer = 'x';
+    let currentDiv = -1;
+    let bigGame = createXODiv('div'+9);
+    bigGame.style.visibility = "hidden";
+    let gameOver = false;
+    document.body.appendChild(bigGame);
+    let d = document.createElement('div');
+    d.className = "lastDiv";
+    d.innerText= '';
+    document.body.appendChild(d);
+    showSelectedDiv();
+</script>
+</body>
+</html>
